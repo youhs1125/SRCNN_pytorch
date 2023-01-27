@@ -14,8 +14,7 @@ class SRCNN(nn.Module):
         nn.ReLU()
     )
     self.outputLayer = nn.Sequential(
-        nn.Conv2d(32,3,kernel_size=5,padding=2,padding_mode='replicate'),
-        nn.ReLU()
+        nn.Conv2d(32,3,kernel_size=5,padding=2,padding_mode='replicate')
     )
   def forward(self, X):
     X = self.inputLayer(X)
