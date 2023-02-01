@@ -5,13 +5,14 @@ import cv2
 import torch
 import torch.utils.data as td
 
+
 def getImageFiles(path):
     img_path = []
 
     for p in path:
         for (root, directories, files) in os.walk(p):
             for file in files:
-                file_path = os.path.join(root,file)
+                file_path = os.path.join(root, file)
                 img_path.append(file_path)
 
     file = []
@@ -21,8 +22,9 @@ def getImageFiles(path):
         img /= 255.
         file.append(img)
 
-    print("images: ",len(file))
+    print("images: ", len(file))
     return file
+
 
 def DataAugmentation(file):
     stride = 14
@@ -42,27 +44,29 @@ def DataAugmentation(file):
     print(len(crops))
     crops = np.array(crops)
 
-    print("Augmentation Finished size:",len(crops))
+    print("Augmentation Finished size:", len(crops))
     return crops
+
 
 def downsampling(file, isTest=False):
     ds = []
     for i in range(len(file)):
-        img_W,img_H = file[i].shape[0], file[i].shape[1]
+        img_W, img_H = file[i].shape[0], file[i].shape[1]
         temp = cv2.GaussianBlur(file[i], (0, 0), 1)
-        temp = cv2.resize(temp, dsize=(img_H//2, img_W//2), interpolation=cv2.INTER_CUBIC)
+        temp = cv2.resize(temp, dsize=(img_H // 2, img_W // 2), interpolation=cv2.INTER_CUBIC)
         ds.append(cv2.resize(temp, dsize=(img_H, img_W), interpolation=cv2.INTER_CUBIC))
 
     if isTest == False:
         ds = np.array(ds)
     return ds
 
-def changeColorChannelLocation(file1,file2):
 
+def changeColorChannelLocation(file1, file2):
     data = np.reshape(file1, (file1.shape[0], file1.shape[-1], file1.shape[1], file1.shape[2]))
     target = np.reshape(file2, (file2.shape[0], file2.shape[-1], file2.shape[1], file2.shape[2]))
 
     return data, target
+
 
 def getDataset():
     path = []
@@ -71,10 +75,11 @@ def getDataset():
 
     file = getImageFiles(path)
     tfile = DataAugmentation(file)
+    print("isNan",np.unique(np.isnan(tfile)))
     dfile = downsampling(tfile)
+    print("isNan", np.unique(np.isnan(dfile)))
 
-
-    target, data = changeColorChannelLocation(tfile,dfile)
+    target, data = changeColorChannelLocation(tfile, dfile)
 
     # define dataset
     target = torch.from_numpy(target)
@@ -99,6 +104,7 @@ def getDataset():
 
     return train_dataloader, val_dataloader
 
+
 def getTestData():
     path = []
 
@@ -106,6 +112,6 @@ def getTestData():
     path.append("Images/Set14")
 
     data = getImageFiles(path)
-    target = downsampling(data,isTest=True)
+    target = downsampling(data, isTest=True)
 
     return data, target

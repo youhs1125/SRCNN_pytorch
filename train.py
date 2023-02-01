@@ -5,16 +5,18 @@ import torch.optim as optim
 from tensorboardX import SummaryWriter
 import dataset
 import loop
-import matplotlib.pyplot as plt
-import numpy as np
+import os
 
 def doTrain():
+    os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
     # get dataloader
     train_dataloader, val_dataloader = dataset.getDataset()
 
     # use GPU
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
+    # device = "cpu"
 
     # define model
     model = SRCNN().to(device)
@@ -30,7 +32,7 @@ def doTrain():
     writer = SummaryWriter()
 
     # define epoch
-    max_epoch = 300
+    max_epoch = 100
 
     for epoch in range(1, max_epoch + 1):
         # train
@@ -43,7 +45,7 @@ def doTrain():
         with torch.no_grad():
             loop.val_loop(model, val_dataloader, writer, epoch)
 
-    writer.close()
+    # writer.close()
     torch.save(model.state_dict(),"models/SRCNN_model_state_dict.pt")
     torch.save(model,"models/SRCNN_model.pt")
 

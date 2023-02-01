@@ -5,10 +5,12 @@ import cv2
 
 # define train_loop
 
-def train_loop(model, dataloader, loss_fn, optimizer, writer, epoch):
-    size = len(dataloader.dataset)
-    # use GPU
+def train_loop(model, dataloader, loss_fn, optimizer,writer, epoch):
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = "cpu"
+
+    size = len(dataloader.dataset)
     cur_loss = 0.0
     for iter, (X, y) in enumerate(tqdm(dataloader, position=0, leave=True, desc="train")):
         X, y = X.to(device), y.to(device)
@@ -27,7 +29,7 @@ def train_loop(model, dataloader, loss_fn, optimizer, writer, epoch):
             num_y = y.cpu().numpy()
             train_PSNR = cv2.PSNR(num_pred*255, num_y*255)
 
-            print(f"{iter}-train_loss: {train_loss} PSNR: {train_PSNR}")
+            print(f"\n{iter}-train_loss: {train_loss} PSNR: {train_PSNR}")
             writer.add_scalar("Loss/train", train_loss, epoch)
             writer.add_scalar("PSNR/train", train_PSNR, epoch)
 
@@ -36,9 +38,10 @@ def train_loop(model, dataloader, loss_fn, optimizer, writer, epoch):
 
 # define validation_loop
 
-def val_loop(model, dataloader, writer, epoch):
-    # use GPU
+def val_loop(model, dataloader,writer, epoch):
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = "cpu"
     val_PSNR = 0.0
     for iter, (X, y) in enumerate(tqdm(dataloader, position=0, leave=True, desc="validation")):
         pred = model(X.to(device))
@@ -49,7 +52,7 @@ def val_loop(model, dataloader, writer, epoch):
     val_PSNR /= len(dataloader)
     print(f"RSNR: {val_PSNR}")
 
-    writer.add_scalar("PSNR/val", val_PSNR, epoch)
+    # writer.add_scalar("PSNR/val", val_PSNR, epoch)
 
 # define test_loop
 

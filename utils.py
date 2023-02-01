@@ -22,7 +22,7 @@ def comparePSNR(origins, bicubic, preds1, preds2=None, preds3 = None):
         mPSNR += predPSNR
         bPSNR += bicubicPSNR
 
-        if i == 5:
+        if i == 2:
             print(f"PSNR(of images below) SRCNN : {predPSNR} Bicubic Interpolation: {bicubicPSNR}")
             # fig, axes = plt.subplots(1,4, figsize = (20,48))
 
