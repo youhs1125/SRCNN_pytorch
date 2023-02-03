@@ -1,6 +1,6 @@
 from tqdm import tqdm
 import torch
-import torch.nn as nn
+import numpy as np
 import cv2
 
 # define train_loop
@@ -62,8 +62,8 @@ def test_loop(model, ds):
     model.eval()
     with torch.no_grad():
         for img in ds:
-            temp = img.reshape(img.shape[-1],img.shape[0],img.shape[1])
-            input = torch.FloatTensor(temp)
+            np_transpose = np.ascontiguousarray(img.transpose((2, 0, 1)))
+            input = torch.FloatTensor(np_transpose)
             pred.append(model(input).numpy())
 
     return pred
