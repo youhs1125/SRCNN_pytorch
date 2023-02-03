@@ -2,20 +2,39 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+def calculatePSNR(sr, hr, scale = 2):
+    diff = (sr - hr)/256
+    shave = scale
+    diff[:,:,0] = diff[:,:,0]*65.738/256
+    diff[:,:,1] = diff[:,:,1] * 129.057/256
+    diff[:,:,2] = diff[:,:,2] * 25.064/256
+
+    diff = np.sum(diff, axis=2)
+
+    valid = diff[shave:-shave, shave:-shave]
+    mse = np.mean(valid**2)
+    # print(mse)
+    return -10 * np.log10(mse)
+
+def backChannel(img):
+    np_transpose = np.ascontiguousarray(img.transpose((1, 2, 0)))
+    return np_transpose
 def comparePSNR(origins, bicubic, preds1, preds2=None, preds3 = None):
     # compare predicts with bicubic
 
     mPSNR = 0
     bPSNR = 0
     for i in range(len(preds1)):
-        pred_num = preds1[i].reshape(preds1[i].shape[1],preds1[i].shape[2],preds1[i].shape[0])
+        pred_num = backChannel(preds1[i])
         pred_num = pred_num*255
 
         testi = origins[i]*255
         bicubici = bicubic[i]*255
 
-        predPSNR = cv2.PSNR(pred_num, testi)
-        bicubicPSNR = cv2.PSNR(bicubici, testi)
+        # predPSNR = cv2.PSNR(pred_num, testi)
+        predPSNR = calculatePSNR(pred_num, testi)
+        # bicubicPSNR = cv2.PSNR(bicubici, testi)
+        bicubicPSNR = calculatePSNR(bicubici,testi)
         # print("MODEL --- PSNR: ", predPSNR)
         # print("BICUBIC - PSNR: ", bicubicPSNR)
 
