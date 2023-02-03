@@ -11,6 +11,10 @@ def train_loop(model, dataloader, loss_fn, optimizer,writer, epoch):
     # device = "cpu"
 
     size = len(dataloader.dataset)
+
+    # the last layer's learning rate should be 1e-5
+    optimizer.param_groups[-1]["lr"] = 1e-5
+
     cur_loss = 0.0
     for iter, (X, y) in enumerate(tqdm(dataloader, position=0, leave=True, desc="train")):
         X, y = X.to(device), y.to(device)
