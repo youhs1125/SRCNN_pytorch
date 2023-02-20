@@ -2,6 +2,7 @@ from tqdm import tqdm
 import torch
 import numpy as np
 import cv2
+import utils
 
 # define train_loop
 
@@ -66,8 +67,7 @@ def test_loop(model, ds):
     model.eval()
     with torch.no_grad():
         for img in ds:
-            np_transpose = np.ascontiguousarray(img.transpose((2, 0, 1)))
-            input = torch.FloatTensor(np_transpose)
+            input = torch.FloatTensor(img)
             pred.append(model(input).numpy())
 
     return pred
@@ -76,6 +76,7 @@ def getBicubic(ds):
     bicubic = []
 
     for img in ds:
+        img = utils.backChannel(img)
         bicubic.append(cv2.resize(img,dsize=(img.shape[1],img.shape[0]),interpolation=cv2.INTER_CUBIC))
 
 

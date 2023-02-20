@@ -28,7 +28,7 @@ def comparePSNR(origins, bicubic, preds1, preds2=None, preds3 = None):
         pred_num = backChannel(preds1[i])
         pred_num = pred_num*255
 
-        testi = origins[i]*255
+        testi = backChannel(origins[i]*255)
         bicubici = bicubic[i]*255
 
         # predPSNR = cv2.PSNR(pred_num, testi)

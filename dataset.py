@@ -62,11 +62,25 @@ def downsampling(file, isTest=False):
 
 
 def changeColorChannelLocation(file1, file2):
+    if len(file1.shape) != 3:
+        file1 = np.expand_dims(file1, axis=2)
+        file1 = np.concatenate([file1] * 3, 2)
+        file2 = np.expand_dims(file2, axis=2)
+        file2 = np.concatenate([file2] * 3, 2)
+
     data = np.ascontiguousarray(file1.transpose((0,3,1,2)))
     target = np.ascontiguousarray(file2.transpose((0,3,1,2)))
 
     return data, target
 
+def changeChannels(ds):
+    for i in range(len(ds)):
+        if len(ds[i].shape) != 3:
+            ds[i] = np.expand_dims(ds[i], axis=2)
+            ds[i] = np.concatenate([ds[i]] * 3, 2)
+        ds[i] = np.ascontiguousarray(ds[i].transpose((2, 0, 1)))
+        # print(ds[i].shape)
+    return ds
 
 def getDataset():
     path = []
@@ -113,5 +127,7 @@ def getTestData():
 
     data = getImageFiles(path)
     target = downsampling(data, isTest=True)
+    data = changeChannels(data)
+    target = changeChannels(target)
 
     return data, target
